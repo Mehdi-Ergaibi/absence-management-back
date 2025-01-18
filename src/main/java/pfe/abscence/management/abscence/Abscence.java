@@ -37,7 +37,7 @@ public class Abscence {
     private LocalTime endTime;
     
     private String motif;
-    private String proof;
+    private String proof; // url dyal document chahada tibiya ....
 
     @ManyToOne
     @JoinColumn(name = "cne", nullable = false)

@@ -23,8 +23,8 @@ public class AbsenceService {
         return absenceRepository.save(absence);
     }
 
-    public List<Abscence> getAbsencesByStudent(String cne) {
-        return absenceRepository.findByStudentCne(cne);
+    public List<AbsenceDTO> getAbsencesByStudent(String cne) {
+        return absenceRepository.findAbsencesByStudentCne(cne);
     }
     public List<Abscence> getAbsencesByElement(Long elementId) {
         return absenceRepository.findByElementElementId(elementId);
@@ -39,11 +39,13 @@ public class AbsenceService {
     
     public double getTotalDurationByStudentAndElement(String cne, Long elementId) {
         List<Abscence> absences = absenceRepository.findByStudentAndElement(cne, elementId);
+        System.out.println(calculateTotalDuration(absences));
         return calculateTotalDuration(absences);
     }
 
     public double getTotalDurationByStudentAndModule(String cne, Long moduleId) {
         List<Abscence> absences = absenceRepository.findByStudentAndModule(cne, moduleId);
+
         return calculateTotalDuration(absences);
     }
 
@@ -64,5 +66,14 @@ public class AbsenceService {
     public boolean canPassNormalExamByModule(String cne, Long moduleId) {
         double totalDuration = getTotalDurationByStudentAndModule(cne, moduleId);
         return totalDuration <= 24; // 24 heures par module
+    }
+
+    public void updateProof(Long absenceId, String motif, String proofPath) {
+        Abscence abscence = absenceRepository.findById(absenceId)
+            .orElseThrow(() -> new RuntimeException("Absence not found"));
+
+        abscence.setProof(proofPath);
+        abscence.setMotif(motif);
+        absenceRepository.save(abscence);
     }
 }
