@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pfe.abscence.management.types.Semestre;
+
 
 @Service
 public class AbsenceService {
@@ -75,5 +77,15 @@ public class AbsenceService {
         abscence.setProof(proofPath);
         abscence.setMotif(motif);
         absenceRepository.save(abscence);
+    }
+
+    public List<StudentAbsenceSummaryDTO> getAbsenceSummaryByFiliere(String filiereId, Semestre semestre, String type) {
+        if (type.equals("element")) {
+            return absenceRepository.getAbsenceSummaryByElementAndFiliere(filiereId, semestre);
+        } else if (type.equals("module")) {
+            return absenceRepository.getAbsenceSummaryByModuleAndFiliere(filiereId, semestre);
+        } else {
+            throw new IllegalArgumentException("Invalid type. Must be 'element' or 'module'.");
+        }
     }
 }

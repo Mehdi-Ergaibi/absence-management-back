@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import pfe.abscence.management.types.Semestre;
 
 @RestController
 @RequestMapping("/api/absences")
@@ -118,4 +121,20 @@ public class AbsenceController {
     }
 }
 
+    @GetMapping("/filiere/{filiereName}/bilan")
+    public ResponseEntity<List<StudentAbsenceSummaryDTO>> getAbsenceSummaryByFiliere(
+            @PathVariable String filiereName,
+            @RequestParam Semestre semestre,
+            @RequestParam String type) {
+
+        try {
+/*             System.out.println("in try");
+ */            List<StudentAbsenceSummaryDTO> absenceSummary = absenceService.getAbsenceSummaryByFiliere(filiereName, semestre, type);
+            return ResponseEntity.ok(absenceSummary);
+        } catch (Exception e) {
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
+    }
 }
