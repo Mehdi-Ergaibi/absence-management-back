@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,19 @@ public class FiliereController {
     @GetMapping("/names")
     public List<String> getAllFiliersNames(){
         return filiereService.getFiliersNames();
+    }
+
+    @PutMapping("/{filiereId}")
+    public ResponseEntity<Filiere> updateFiliere(
+            @PathVariable Long filiereId, 
+            @RequestBody Filiere updatedFiliere) {
+
+        try {
+            Filiere updated = filiereService.updateFiliere(filiereId, updatedFiliere);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
 

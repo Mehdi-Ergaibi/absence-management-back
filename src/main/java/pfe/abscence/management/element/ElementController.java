@@ -54,8 +54,8 @@ public class ElementController {
     }
 
     @GetMapping("/{name}")
-public Optional<Long> getElementIdByName(@PathVariable String name) {
+    public Optional<Long> getElementIdByName(@PathVariable String name) {
 
-    return elementService.getElementIdByName(name);
-}
+        return elementService.getElementIdByName(name);
+    }
 }
