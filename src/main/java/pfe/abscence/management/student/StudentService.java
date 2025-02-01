@@ -28,6 +28,10 @@ public class StudentService {
             .orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
+    public Optional<Student> getStudentByCne(String cne) {
+        return studentRepository.findByCne(cne);
+    }
+
     public List<Student> getStudentsByFiliereId(Long filiereId) {
         return studentRepository.findByFiliereFiliereId(filiereId);
     }
