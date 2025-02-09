@@ -41,9 +41,7 @@ public class AbsenceService {
     }
 
     public Abscence addAbsence(Abscence absence) {
-        Abscence savedAbsence = absenceRepository.save(absence);
-
-        
+        Abscence savedAbsence = absenceRepository.save(absence);        
 
         Element element = elementService.getElementById(absence.getElement().getElementId());
         Optional<Student> student = studentService.getStudentByCne(absence.getStudent().getCne());
@@ -55,8 +53,8 @@ public class AbsenceService {
         absence.getStartTime(),
         absence.getEndTime());
 
-        System.out.println(message);
-        System.out.println("student " +  student.get());
+        /* System.out.println(message);
+        System.out.println("student " +  student.get()); */
 
         sendEmailNotification(student, message);
 

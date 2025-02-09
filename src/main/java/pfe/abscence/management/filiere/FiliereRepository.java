@@ -2,6 +2,7 @@ package pfe.abscence.management.filiere;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,4 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface FiliereRepository extends JpaRepository<Filiere, Long> {
     @Query("SELECT f.name FROM Filiere f") 
     List<String> findAllFiliereNames();
+
+    Optional<Filiere> findByFiliereId(Long id);
 }

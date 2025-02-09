@@ -1,6 +1,7 @@
 package pfe.abscence.management.filiere;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class FiliereController {
     }
 
     @GetMapping("/one/{id}")
-    public ResponseEntity<Filiere> getFiliereById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getFiliereById(@PathVariable Long id) {
         return ResponseEntity.ok(filiereService.getFiliereById(id));
     }
 

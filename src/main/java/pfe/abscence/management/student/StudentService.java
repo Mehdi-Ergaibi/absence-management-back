@@ -1,5 +1,6 @@
 package pfe.abscence.management.student;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,10 +24,19 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Student getStudentById(Long id) {
-        return studentRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Student not found"));
-    }
+    public Map<String, Object> getStudentById(String cne) {
+    return studentRepository.findByCne(cne)
+        .map(student -> {
+            Map<String, Object> studentData = new HashMap<>();
+            studentData.put("cne", student.getCne());
+            studentData.put("firstName", student.getFirstName());
+            studentData.put("lastName", student.getLastName());
+            studentData.put("filiere", student.getFiliere().getName());
+            studentData.put("semestre", student.getSemestre());
+            return studentData;
+        })
+        .orElseThrow(() -> new RuntimeException("Student not found"));
+}
 
     public Optional<Student> getStudentByCne(String cne) {
         return studentRepository.findByCne(cne);

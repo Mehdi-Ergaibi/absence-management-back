@@ -1,6 +1,8 @@
 package pfe.abscence.management.filiere;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,14 @@ public class FiliereService {
         return filiereRepository.findAll();
     }
 
-    public Filiere getFiliereById(Long id) {
-        return filiereRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Filiere not found"));
+    public Map<String, Object> getFiliereById(Long id) {
+        return filiereRepository.findByFiliereId(id).map(filiere -> {
+            Map<String, Object> filiereData = new HashMap<>();
+            filiereData.put("name", filiere.getName());
+            return filiereData;
+        })
+                .orElseThrow(() -> new RuntimeException("filiere not found"));
+
     }
 
     public void deleteFiliere(Long id) {
