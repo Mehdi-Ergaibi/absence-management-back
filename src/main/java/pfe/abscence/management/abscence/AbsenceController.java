@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import pfe.abscence.management.types.FiliereSemestreStats;
 import pfe.abscence.management.types.Semestre;
 
 @RestController
@@ -137,4 +139,33 @@ public class AbsenceController {
                     .body(Collections.emptyList());
         }
     }
+
+    @GetMapping("/total-absences")
+    public ResponseEntity<Double> getTotalAbsences(
+            @RequestParam String filiere,
+            @RequestParam String semestre,
+            @RequestParam String module,
+            @RequestParam String element) {
+        double totalAbsences = absenceService.getTotalAbsences(filiere, semestre, module, element);
+        return ResponseEntity.ok(totalAbsences);
+    }
+
+    @GetMapping("/top-3-absences")
+    public ResponseEntity<List<FiliereSemestreStats>> getTop3FiliereSemestreAbsences() {
+        return ResponseEntity.ok(absenceService.getTop3FiliereSemestreAbsences());
+    }
+
+    @GetMapping("/students-without-rights")
+    public ResponseEntity<Map<String, Long>> getStudentsWithoutRightsToPass(@RequestParam String semestre) {
+        return ResponseEntity.ok(absenceService.getStudentsWithoutRightsToPass(semestre));
+    }
+
+    @GetMapping("/absences-by-week")
+    public ResponseEntity<Map<Integer, Double>> getAbsencesByWeek(
+            @RequestParam String filiere,
+            @RequestParam String semestre) {
+        return ResponseEntity.ok(absenceService.getAbsencesByWeek(filiere, semestre));
+    }
+    
+
 }

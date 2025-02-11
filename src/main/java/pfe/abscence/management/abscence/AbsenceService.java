@@ -3,8 +3,11 @@ package pfe.abscence.management.abscence;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import pfe.abscence.management.element.Element;
 import pfe.abscence.management.element.ElementService;
 import pfe.abscence.management.student.Student;
 import pfe.abscence.management.student.StudentService;
+import pfe.abscence.management.types.FiliereSemestreStats;
 import pfe.abscence.management.types.Semestre;
 
 
@@ -141,4 +145,74 @@ public class AbsenceService {
             throw new IllegalArgumentException("Invalid type. Must be 'element' or 'module'.");
         }
     }
+
+    public double getTotalAbsences(String filiere, String semestreStr, String module, String element) {
+        Semestre semestre;
+        try {
+            semestre = Semestre.valueOf(semestreStr); // Converts "S3" -> Semestre.S3
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid Semestre: " + semestreStr);
+        }
+    
+        return absenceRepository.getTotalAbsences(filiere, semestre, module, element);
+    }
+    
+
+    public List<FiliereSemestreStats> getTop3FiliereSemestreAbsences() {
+        List<Object[]> results = absenceRepository.getTopFiliereSemestreAbsences();
+        return results.stream()
+                .map(row -> new FiliereSemestreStats((String) row[0], (Semestre) row[1], (Double) row[2]))
+                .limit(3)
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, Long> getStudentsWithoutRightsToPass(String semestreStr) {
+        // Convert String to Enum
+        Semestre semestre;
+        try {
+            semestre = Semestre.valueOf(semestreStr); // Convert "S3" -> Semestre.S3
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid Semestre: " + semestreStr);
+        }
+    
+        // Fetch raw data from repository
+        List<Object[]> rawData = absenceRepository.getStudentsWithoutRightsToPass(semestre);
+        Map<String, Long> result = new HashMap<>();
+    
+        // Convert List<Object[]> to Map<String, Long>
+        for (Object[] row : rawData) {
+            String filiere = (row[0] != null) ? row[0].toString() : "Unknown"; // Avoid null keys
+            Long count = ((Number) row[1]).longValue(); // Ensure proper Long conversion
+            result.put(filiere, count);
+        }
+    
+        return result;
+    }
+    
+
+    public Map<Integer, Double> getAbsencesByWeek(String filiere, String semestreStr) {
+        // Convert String to Enum
+        Semestre semestre;
+        try {
+            semestre = Semestre.valueOf(semestreStr);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid Semestre: " + semestreStr);
+        }
+    
+        // Fetch raw data from repository
+        List<Object[]> rawData = absenceRepository.getAbsencesByWeek(filiere, semestre);
+        Map<Integer, Double> result = new HashMap<>();
+    
+        // Convert List<Object[]> to Map<Integer, Double>
+        for (Object[] row : rawData) {
+            Integer weekNumber = ((Number) row[0]).intValue(); // Week number
+            Double totalHours = ((Number) row[1]).doubleValue(); // Total absence hours
+            result.put(weekNumber, totalHours);
+        }
+    
+        return result;
+    }
+    
+
+
 }

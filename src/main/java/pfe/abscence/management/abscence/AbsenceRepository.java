@@ -52,8 +52,38 @@ public interface AbsenceRepository extends JpaRepository<Abscence, Long> {
     List<StudentAbsenceSummaryDTO> getAbsenceSummaryByModuleAndFiliere(
     @Param("filierName") String filierName, @Param("semestre") Semestre semestre);
 
+// statistiqueeeeeeess booom ya dawla qarabt nsali
+    @Query("SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, a.startTime, a.endTime) / 60.0), 0) FROM Abscence a " +
+    "WHERE a.student.filiere.name = :filiere " +
+    "AND a.student.semestre = :semestre " +
+    "AND a.element.module.name = :module " +
+    "AND a.element.name = :element")
+    double getTotalAbsences(@Param("filiere") String filiere, 
+                    @Param("semestre") Semestre semestre, 
+                    @Param("module") String module, 
+                    @Param("element") String element);
 
-     
+    // par moyenne par etudiant
+    @Query("SELECT a.student.filiere.name, a.student.semestre, " +
+    "AVG(TIMESTAMPDIFF(MINUTE, a.startTime, a.endTime) / 60.0) " +
+    "FROM Abscence a " +
+    "GROUP BY a.student.filiere.name, a.student.semestre " +
+    "ORDER BY AVG(TIMESTAMPDIFF(MINUTE, a.startTime, a.endTime) / 60.0) DESC")
+    List<Object[]> getTopFiliereSemestreAbsences();
+
+    // Get students who don't have the right to pass based on total absence duration
+    @Query("SELECT a.student.filiere.name, COUNT(DISTINCT a.student) FROM Abscence a " +
+       "WHERE a.student.semestre = :semestre " +
+       "GROUP BY a.student.filiere.name " +
+       "HAVING SUM(TIMESTAMPDIFF(MINUTE, a.startTime, a.endTime) / 60.0) >= 24")
+    List<Object[]> getStudentsWithoutRightsToPass(@Param("semestre") Semestre semestre);
+
+    // Get absences by week (total duration in hours)
+    @Query("SELECT WEEK(a.date), COALESCE(SUM(TIMESTAMPDIFF(MINUTE, a.startTime, a.endTime) / 60.0), 0) " +
+       "FROM Abscence a " +
+       "WHERE a.student.filiere.name = :filiere AND a.student.semestre = :semestre " +
+       "GROUP BY WEEK(a.date)")
+List<Object[]> getAbsencesByWeek(@Param("filiere") String filiere, @Param("semestre") Semestre semestre);
 
 
 }
